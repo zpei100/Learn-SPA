@@ -12,21 +12,30 @@ class NewPost extends Component {
     );
   }
 
+  formSubmit(value) {
+    console.log(value);
+  }
+
   render() {
     return (
-      <form>
+      <form onSubmit={this.props.handleSubmit(this.formSubmit.bind(this))}>
         <Field label="Title" name="title" component={this.renderForm} />
 
-        <Field label="Categories" name="title" component={this.renderForm} />
+        <Field label="Categories" name="Categories" component={this.renderForm} />
 
-        <Field label="Content" name="title" component={this.renderForm} />
+        <Field label="Content" name="Content" component={this.renderForm} />
+        <button type="submit">Post!!!</button>
       </form>
     );
   }
 }
 
-export default reduxForm(
-  {
-    form: 'newPost'
-  },
-)(NewPost);
+function validate() {
+  return {}
+}
+
+
+export default reduxForm({
+  validate: validate,
+  form: 'newPost'
+})(NewPost);
