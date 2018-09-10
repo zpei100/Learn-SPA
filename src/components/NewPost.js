@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
+import axios from 'axios';
+import {API_URL, query_string} from '../actions/index.js'
 
 class NewPost extends Component {
   renderForm(field) {
-    console.log(field);
+    console.log('field is: ', field);
     //research {...field.input}
     //specifically look at the field.input array/object and look at each of the event handler definitions
     return (
-      <div>
-        Hello
+      <div className="form-group">
         <label>{field.label}</label>
-        <input type="text" {...field.input} />
+        <input className="form-control" type="text" {...field.input} />
+        <div className="text-warning">{ field.meta.touched ? field.meta.error : ''}</div>
       </div>
     );
   }
@@ -21,7 +23,13 @@ class NewPost extends Component {
   //also, there are 'native' field properties like onChange, onBlur, etc.. : event handlers that come with Field from the redux-form library. They will disdpatch an action to the redux store, caught by the formReducer, and then have a state returned
   //at home, study the onChange event handlers of field.inputz
 
-  formSubmit(value) {}
+  formSubmit(value) {
+    axios.post(`${API_URL}/posts?key=${query_string}`, {
+      title: value.title,
+      categories: value.categories,
+      content: value.content
+    });
+  }
 
   render() {
     //handleSubmit is a property passed to this component via the link at the bottom
@@ -37,21 +45,37 @@ class NewPost extends Component {
 
         <Field
           label="Categories"
-          name="Categories"
+          name="categories"
           component={this.renderForm}
         />
 
-        <Field label="Content" name="Content" component={this.renderForm} />
+        <Field label="Content" name="content" component={this.renderForm} />
         <button type="submit">Post!!!</button>
+        <a className="btn btn-primary" href="/home">Home</a>
       </form>
     );
   }
 }
 
-function validate() {
+function validate(value) {
   //implement details on error object
+  let error = {}
+  console.log('value :',  value)
 
-  return {};
+  if(!value.title) {
+    error['title'] = 'Please enter a title'
+  } 
+  
+  if (!value.categories) {
+    error['categories'] = 'Please enter a category'
+  } 
+  
+  if (!value.content) {
+    error['content'] =  'Please enter content'
+  }
+
+
+  return error;
 }
 
 function mapStateToProps(state) {
